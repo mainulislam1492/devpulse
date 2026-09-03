@@ -16,7 +16,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/auth", authRoute);
-app.use("/api/auth/",authRoute);
+// app.use("/api/auth/",authRoute);
 
 
 export default app;

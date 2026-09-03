@@ -1,10 +1,13 @@
 import bcrypt from "bcryptjs";
 import { pool } from "../../db";
 import type { IUser } from "./auth.interfaces";
+import { error } from "node:console";
+import config from "../../config";
+import jwt from "jsonwebtoken";
+import { Pool } from "pg";
 
 const createUserIntoDB = async(payload: IUser) => {
-    console.log("PAYLOAD:", JSON.stringify(payload, null, 2));
-
+   
    const { name, email, password } = payload;
    const role = payload.role ?? "contributor";
   
@@ -20,6 +23,48 @@ const createUserIntoDB = async(payload: IUser) => {
     return result;
 };
 
+const loginUserIntoDB = async(payload : {
+     email: string;
+  password: string;
+}) => {
+    const {email, password} = payload;
+    
+    // check if the user exist or not
+    const userData = await pool.query(`
+        SELECT * FROM users WHERE email=$1
+    `,
+    [email],
+     );
+    if(userData.rows.length === 0) {
+        throw new Error("Invalid Credentials!");
+    }
+
+    // compare the password -> done
+    const userInfo = userData.rows[0];
+    const matchPassword = await bcrypt.compare(password, userInfo.password);
+
+    if(!matchPassword) {
+        throw new Error("Invalid Credentials!");
+    }
+
+    // Generate token
+    const user = {
+        id: userInfo.id,
+        name: userInfo.name,
+        email: userInfo.email,
+        role: userInfo.role,
+        created_at: userInfo.created_at,
+        updated_at: userInfo.updated_at,
+    };
+
+    const token = jwt.sign(user, config.secret as string, {
+        expiresIn: "1d",
+    });
+   
+    return { token, user };
+};
+
 export const userService = {
     createUserIntoDB,
+    loginUserIntoDB,
 };
