@@ -57,8 +57,17 @@ const loginUserIntoDB = async(payload : {
         updated_at: userInfo.updated_at,
     };
 
-    const token = jwt.sign(user, config.secret as string, {
-        expiresIn: "1d",
+    // const reporter_id = user.id;
+
+    const token = jwt.sign(
+        {
+        user, 
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        },
+        config.secret as string, {
+        expiresIn: "7d",
     });
    
     return { token, user };
