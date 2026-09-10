@@ -51,7 +51,60 @@ const updateIssue = async (req: Request, res: Response) => {
     }
 };
 
+const deleteIssues = async(req:Request, res:Response) => {
+    try {
+        const issueId = Number(req.params.id);
+        console.log("Issues ID: ",issueId);
+
+        const userId = req.user.id!;
+        const userRole = req.user.role;
+        console.log("User :-", userId, userRole);
+
+        if(issueId <= 0) {
+           throw new Error('Invalid issue ID');
+        }
+
+        const result = await issuesService.deleteIssuesFromDB(issueId, userId, userRole);
+        res.status(200).json({
+            success: true,
+            message: "Issue deleted successfully",
+        });
+    } catch (error : any) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+            error: error,
+        });
+    }
+};
+
+const updateIssueStatus = async (req: Request, res: Response) => {
+    try {
+        const issueId = Number(req.params.id);
+        const userRole = req.user.role;
+
+        if (issueId <= 0) {
+            throw new Error("Invalid issue ID");
+        }
+
+        const result = await issuesService.updateIssueStatusFromDB(issueId,req.body.status,userRole);
+
+        res.status(200).json({
+            success: true,
+            message: "Issue status updated successfully",
+            data: result.rows[0],
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
 export const issuesController = {
     createIssues,
     updateIssue,
+    deleteIssues,
+    updateIssueStatus,
 };

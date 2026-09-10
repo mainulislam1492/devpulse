@@ -6,5 +6,7 @@ const router = Router();
 
 router.post("/",authMiddleware,issuesController.createIssues);
 router.patch("/:id",authMiddleware,issuesController.updateIssue);
+router.delete("/:id",authMiddleware,issuesController.deleteIssues);
+router.patch("/:id/status",authMiddleware,issuesController.updateIssueStatus);
 
 export const issuesRoute = router;
