@@ -166,11 +166,57 @@ const getSingleIssueFromDB = async (id: number) => {
     };
 };
 
+const getAllIssuesFromDB = async (query: any) => {
+    const { sort = "newest", type, status } = query;
+
+    let queryText = "SELECT * FROM issues";
+    const values: any[] = [];
+    const conditions: string[] = [];
+
+    if (type) {
+        values.push(type);
+        conditions.push(`type = $${values.length}`);
+    }
+
+    if (status) {
+        values.push(status);
+        conditions.push(`status = $${values.length}`);
+    }
+
+    if (conditions.length > 0) {
+        queryText += " WHERE " + conditions.join(" AND ");
+    }
+
+    if (sort === "oldest") {
+        queryText += " ORDER BY created_at ASC";
+    } else {
+        queryText += " ORDER BY created_at DESC";
+    }
+
+    const result = await pool.query(queryText, values);
+
+    const issues = [];
+
+    for (const issue of result.rows) {
+        const reporter = await pool.query(
+            `SELECT id, name, role FROM users WHERE id = $1`,
+            [issue.reporter_id]
+        );
+
+        issues.push({
+            ...issue,
+            reporter: reporter.rows[0] || null
+        });
+    }
+
+    return issues;
+};
+
 export const issuesService = {
     createIssuesIntoDB,
     updateIssueIntoDB,
     deleteIssuesFromDB,
     updateIssueStatusFromDB,
-    // getAllIssuesFromDB,
+    getAllIssuesFromDB,
     getSingleIssueFromDB,
 }
