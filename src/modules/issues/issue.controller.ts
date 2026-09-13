@@ -1,21 +1,15 @@
 import type { Request, Response } from "express";
 import { issuesService } from "./issues.service";
+import { sendErrorResponse, sendResponse } from "../../utils/response";
 
 const createIssues = async (req: Request, res: Response) => {
   try {
     const reporterId = req.user!.id;
     console.log("ID :", reporterId);
     const result = await issuesService.createIssuesIntoDB(req.body, reporterId);
-    res.status(201).json({
-      success: true,
-      message: "Issue created successfully",
-      data: result.rows[0],
-    });
+    sendResponse(res, 201, "Issue created successfully", result.rows[0]);
   } catch (error: any) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    sendErrorResponse(res, 400, error.message);
   }
 };
 
@@ -35,16 +29,9 @@ const updateIssue = async (req: Request, res: Response) => {
       userRole,
     );
 
-    res.status(200).json({
-      success: true,
-      message: "Issue updated successfully",
-      data: result,
-    });
+    sendResponse(res, 200, "Issue updated successfully", result);
   } catch (error: any) {
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    sendErrorResponse(res, 400, error.message);
   }
 };
 
@@ -66,15 +53,9 @@ const deleteIssues = async (req: Request, res: Response) => {
       userId,
       userRole,
     );
-    res.status(200).json({
-      success: true,
-      message: "Issue deleted successfully",
-    });
+    sendResponse(res, 200, "Issue deleted successfully");
   } catch (error: any) {
-    res.status(403).json({
-      success: false,
-      message: error.message,
-    });
+    sendErrorResponse(res, 403, error.message);
   }
 };
 
@@ -93,16 +74,9 @@ const updateIssueStatus = async (req: Request, res: Response) => {
       userRole,
     );
 
-    res.status(200).json({
-      success: true,
-      message: "Issue status updated successfully",
-      data: result.rows[0],
-    });
+    sendResponse(res, 200, "Issue status updated successfully", result.rows[0]);
   } catch (error: any) {
-    res.status(403).json({
-      success: false,
-      message: error.message,
-    });
+    sendErrorResponse(res, 403, error.message);
   }
 };
 
@@ -112,16 +86,9 @@ const getSingleIssue = async (req: Request, res: Response) => {
 
     const result = await issuesService.getSingleIssueFromDB(id);
 
-    res.status(200).json({
-      success: true,
-      message: "Issue retrived successfully",
-      data: result,
-    });
+    sendResponse(res, 200, "Issue retrived successfully", result);
   } catch (error: any) {
-    res.status(404).json({
-      success: false,
-      message: error.message,
-    });
+    sendErrorResponse(res, 404, error.message);
   }
 };
 
@@ -129,17 +96,9 @@ const getAllIssues = async (req: Request, res: Response) => {
   try {
     const result = await issuesService.getAllIssuesFromDB(req.query);
 
-    res.status(200).json({
-      success: true,
-      message: "Issues retrived successfully",
-      data: result,
-    });
+    sendResponse(res, 200, "Issues retrived successfully", result);
   } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to retrieve issues",
-      errors: error.message,
-    });
+    sendErrorResponse(res, 500, "Failed to retrieve issues");
   }
 };
 
