@@ -305,4 +305,4 @@ npm start
 
 **Mainul Islam Mahim**
 
-CSE Student | Backend Developer | Competitive Programmer
+CSE @ IIUC | Backend Developer
