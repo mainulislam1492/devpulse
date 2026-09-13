@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { pool } from "../../db";
-import type { IUser } from "./auth.interfaces";
+import type { ILoginUser, IUser } from "./auth.interfaces";
 import { error } from "node:console";
 import config from "../../config";
 import jwt from "jsonwebtoken";
@@ -23,10 +23,7 @@ const createUserIntoDB = async(payload: IUser) => {
     return result;
 };
 
-const loginUserIntoDB = async(payload : {
-     email: string;
-  password: string;
-}) => {
+const loginUserIntoDB = async(payload : ILoginUser) => {
     const {email, password} = payload;
     
     // check if the user exist or not

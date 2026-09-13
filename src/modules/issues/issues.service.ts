@@ -1,7 +1,8 @@
 import { Pool } from "pg";
 import { pool } from "../../db";
+import type { ICreateIssue, IGetAllIssuesQuery, IUpdateIssue, IUpdateIssueStatus, UserRole } from "./issues.interfaces";
 
-const createIssuesIntoDB = async(payload: any, reporterId : any) => {
+const createIssuesIntoDB = async(payload: ICreateIssue, reporterId : number) => {
     const {title, description, type} = payload;
   
       
@@ -26,9 +27,9 @@ const createIssuesIntoDB = async(payload: any, reporterId : any) => {
 
 const updateIssueIntoDB = async (
     issueId: number,
-    payload: any,
+    payload: IUpdateIssue,
     userId: number,
-    userRole: string
+    userRole: UserRole
 ) => {
     const issueResult = await pool.query(
         `SELECT * FROM issues WHERE id = $1`,
@@ -72,7 +73,7 @@ const updateIssueIntoDB = async (
     return result.rows[0];
 };
 
-const deleteIssuesFromDB = async(issueId : number, userId: number, userRole: string) => {
+const deleteIssuesFromDB = async(issueId : number, userId: number, userRole: UserRole) => {
     const issueResult = await pool.query(
         `SELECT * FROM issues WHERE id = $1`,
         [issueId]
@@ -98,8 +99,8 @@ const deleteIssuesFromDB = async(issueId : number, userId: number, userRole: str
 
 const updateIssueStatusFromDB = async (
     issueId: number,
-    status: string,
-    userRole: string
+    status: IUpdateIssueStatus["status"],
+    userRole: UserRole
 ) => {
     if (userRole !== "maintainer") {
         throw new Error("Only Maintainer can change issue status!");
@@ -166,11 +167,11 @@ const getSingleIssueFromDB = async (id: number) => {
     };
 };
 
-const getAllIssuesFromDB = async (query: any) => {
+const getAllIssuesFromDB = async (query: IGetAllIssuesQuery) => {
     const { sort = "newest", type, status } = query;
 
     let queryText = "SELECT * FROM issues";
-    const values: any[] = [];
+    const values: (string)[] = [];
     const conditions: string[] = [];
 
     if (type) {
