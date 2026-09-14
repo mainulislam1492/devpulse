@@ -4,7 +4,7 @@ DevPulse is a RESTful issue tracking API built with Node.js, TypeScript, Express
 
 ## Live URL
 
-**Live API:** `Add your deployed URL here`
+**Live API:** [`Add your deployed URL here`](https://devpulse-api-ivory.vercel.app/)
 
 ## Features
 
@@ -74,7 +74,7 @@ src/
 ### 1. Clone the repository
 
 ```bash
-git clone <your-github-repository-url>
+git clone <[your-github-repository-url](https://github.com/mainulislam1492/devpulse.git)>
 cd DevPulse
 ```
 
